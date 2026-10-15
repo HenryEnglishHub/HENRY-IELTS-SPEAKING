@@ -1216,6 +1216,108 @@ button:hover{transform:translateY(-1px)}
 .game-board .quiz-option.good{border:2px solid #108a52;background:#e3ffef;color:#06663a}
 .game-board .quiz-option.bad{border:2px solid #c13b3b;background:#ffeded;color:#a22222}
 @media(max-width:680px){.game-board .quiz-options{grid-template-columns:1fr}.auto-feedback{font-size:15px}}
+
+/* ===== V11: DENSE KNOWLEDGE BANK — MORE VOCABULARY ABOVE THE FOLD ===== */
+.topic-knowledge-page{padding-top:10px;padding-bottom:20px}
+.topic-knowledge-page .breadcrumb{margin-bottom:6px;font-size:12px}
+.topic-knowledge-page .topic-banner{display:none}
+.topic-knowledge-page .main-tabs{margin:5px 0 9px;gap:7px}
+.topic-knowledge-page .main-tabs .tab-btn{padding:9px 13px;border-radius:11px;font-size:13px;min-height:39px}
+.topic-knowledge-page .panel{padding:13px 16px 16px;border-radius:18px}
+.topic-knowledge-page .kb-overview{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin-bottom:9px}
+.topic-knowledge-page .kb-overview-title{display:flex;align-items:center;gap:10px;min-width:0}
+.topic-knowledge-page .kb-overview-title h2{font-size:clamp(18px,2vw,23px);margin:0;color:var(--navy);line-height:1.2}
+.topic-knowledge-page .kb-overview-title .eyebrow{font-size:10px;letter-spacing:.8px;white-space:nowrap}
+.topic-knowledge-page .kb-overview .pill{font-size:11px;padding:6px 10px;white-space:nowrap}
+.topic-knowledge-page .kb-top-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0 0 11px}
+.topic-knowledge-page .kb-tab{min-height:43px;border-radius:11px;padding:6px 5px;font-size:clamp(10px,.78vw,12px);line-height:1.22}
+.topic-knowledge-page .kb-tab span{display:inline-block;font-size:10px;margin:0 5px 0 0;vertical-align:baseline}
+.kb-tools-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.kb-section-title{margin-right:auto;min-width:160px}
+.kb-section-title h2{margin:0;color:var(--navy);font-size:clamp(18px,1.55vw,23px);line-height:1.1}
+.kb-section-title p{margin:4px 0 0;font-size:11px;color:#6a7289}
+.kb-search{width:clamp(195px,22vw,310px);max-width:100%;height:39px;min-height:39px;padding:8px 11px;border-radius:11px;font-size:13px}
+.kb-tools-row .learn-selector{margin:0;display:flex;align-items:center;gap:7px;justify-content:flex-start;padding:5px 6px 5px 10px;border-radius:11px;font-size:12px;min-height:39px;background:#f6f8fc}
+.kb-tools-row .learn-selector .selector-actions{gap:5px}
+.kb-tools-row .learn-selector .ghost-btn{padding:7px 9px;border-radius:9px;font-size:11px;white-space:nowrap}
+.topic-knowledge-page .exercise-row{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 8px}
+.topic-knowledge-page .exercise-row button{padding:8px 10px;min-height:35px;border-radius:10px;font-size:12px;white-space:nowrap;line-height:1.16}
+.kb-list-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 7px;color:#657085;font-size:11px}
+.kb-view-switch{display:flex;gap:3px;border:1px solid #e4e7f0;background:#f6f8fd;padding:3px;border-radius:10px}
+.kb-view-switch button{white-space:nowrap;border:0;background:transparent;color:#4d5673;border-radius:7px;padding:5px 9px;font-size:11px;font-weight:800;line-height:1.2;min-height:27px}
+.kb-view-switch button.active{background:var(--navy);color:#fff}
+/* Default grid layout: compact but keep EN, IPA, part of speech and Vietnamese visible. */
+.vocab-list.horizontal-vocab.view-compact{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;max-height:calc(100dvh - 398px);min-height:210px;overflow-y:auto;align-content:start;padding:1px 5px 5px 1px;scrollbar-gutter:stable}
+.vocab-list.horizontal-vocab.view-compact .vocab-item{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr) 36px;grid-template-areas:"check term audio" "check ipa audio" "check meaning audio";align-content:center;align-items:center;column-gap:8px;row-gap:3px;min-height:86px;width:100%;margin:0;padding:9px 10px;border-radius:12px;background:#fff;border:1px solid #e1e6f1;box-shadow:0 2px 6px rgba(0,0,85,.025);cursor:pointer}
+.vocab-list.horizontal-vocab.view-compact .vocab-item:hover{border-color:#bfc8e3;background:#fafbff}
+.vocab-list.horizontal-vocab.view-compact .vocab-item.selected{border-color:#f9a972;background:#fff7f0;box-shadow:inset 0 0 0 1px #ffd3b5}
+.vocab-list.horizontal-vocab.view-compact .learn-check{grid-area:check;width:17px;height:17px;align-self:start;margin-top:4px}
+.vocab-list.horizontal-vocab.view-compact .vocab-term{grid-area:term;font-size:15px;line-height:1.2;font-weight:900;overflow-wrap:anywhere}
+.vocab-list.horizontal-vocab.view-compact .vocab-term .source-tag{display:none}
+.vocab-list.horizontal-vocab.view-compact .vocab-ipa{grid-area:ipa;font-size:11.5px;line-height:1.15;color:#727e9b;white-space:normal}
+.vocab-list.horizontal-vocab.view-compact .vocab-pos{display:inline-block;font-size:10px;font-weight:750;padding:0;border:0;border-radius:0;background:transparent;color:#9b5b21;text-align:left}
+.vocab-list.horizontal-vocab.view-compact .vocab-meaning{grid-area:meaning;font-size:12.5px;font-weight:650;line-height:1.25;color:#46516d;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.vocab-list.horizontal-vocab.view-compact .vocab-example{display:none}
+.vocab-list.horizontal-vocab.view-compact .vocab-audio-btn{grid-area:audio;width:34px;height:34px;border-radius:10px;font-size:14px;box-shadow:none;justify-self:end}
+.vocab-list.horizontal-vocab.view-compact .vocab-pos{grid-area:ipa;justify-self:end;margin-left:6px;max-width:45%;font-size:9px;line-height:1.1;padding:2px 4px;background:#fff2e8;border-radius:5px}
+.vocab-list.horizontal-vocab.view-compact .vocab-ipa{padding-right:70px;min-width:0}
+/* Full-detail list remains available on one tap for IPA, complete translation, usage and examples. */
+.vocab-table-head:not(.is-detail){display:none}
+.vocab-list.horizontal-vocab.view-detail{grid-template-columns:1fr;max-height:calc(100dvh - 398px);min-height:210px;overflow:auto;gap:5px}
+.vocab-list.horizontal-vocab.view-detail .vocab-item{min-height:61px;padding:8px 12px;border-radius:11px;gap:9px}
+.vocab-list.horizontal-vocab.view-detail .vocab-term{font-size:15px}
+.vocab-list.horizontal-vocab.view-detail .vocab-term .source-tag{font-size:9px;margin-top:3px}
+.vocab-list.horizontal-vocab.view-detail .vocab-ipa,.vocab-list.horizontal-vocab.view-detail .vocab-meaning{font-size:12px}
+.vocab-list.horizontal-vocab.view-detail .vocab-pos{font-size:10px;padding:5px 6px}
+.vocab-list.horizontal-vocab.view-detail .vocab-example{font-size:12px;line-height:1.32}
+.vocab-list.horizontal-vocab.view-detail .vocab-audio-btn{width:38px;height:38px;font-size:15px}
+@media(max-width:1380px){
+ .vocab-list.horizontal-vocab.view-compact{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .kb-tools-row{align-items:center}
+ .kb-section-title{flex-basis:190px}
+ .kb-tools-row .learn-selector{margin-left:auto}
+}
+@media(max-width:1000px){
+ .topic-knowledge-page .kb-top-grid{display:flex;overflow-x:auto;scrollbar-width:thin;padding-bottom:3px}
+ .topic-knowledge-page .kb-tab{flex:0 0 auto;width:155px;font-size:12px}
+ .topic-knowledge-page .kb-tab span{display:inline}
+ .kb-tools-row .learn-selector{margin-left:0}
+ .vocab-list.horizontal-vocab.view-detail .vocab-item{min-height:76px}
+}
+@media(max-width:720px){
+ .topic-knowledge-page{padding:7px 8px 16px}
+ .topic-knowledge-page .breadcrumb{font-size:11px;margin:1px 0 5px}
+ .topic-knowledge-page .main-tabs{display:flex;flex-wrap:nowrap;gap:6px;margin:5px 0 8px}
+ .topic-knowledge-page .main-tabs .tab-btn{font-size:12px;padding:8px 9px;flex:1}
+ .topic-knowledge-page .panel{padding:10px 9px;border-radius:13px}
+ .topic-knowledge-page .kb-overview{margin-bottom:8px}
+ .topic-knowledge-page .kb-overview-title h2{font-size:16px}
+ .topic-knowledge-page .kb-overview-title{gap:6px}
+ .topic-knowledge-page .kb-overview-title .eyebrow{font-size:9px}
+ .topic-knowledge-page .kb-overview .pill{font-size:10px}
+ .topic-knowledge-page .kb-top-grid{margin-bottom:8px}
+ .topic-knowledge-page .kb-tab{min-height:40px;width:148px}
+ .kb-tools-row{gap:6px}
+ .kb-section-title{display:none}
+ .kb-search{flex:1 1 165px;width:auto;min-width:0}
+ .kb-tools-row .learn-selector{flex:0 1 auto;justify-content:space-between;padding:5px 7px;min-height:36px}
+ .kb-tools-row .learn-selector .ghost-btn{padding:6px;font-size:10px}
+ .topic-knowledge-page .exercise-row{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;gap:5px;padding-bottom:4px;margin:5px 0 6px}
+ .topic-knowledge-page .exercise-row button{flex:0 0 auto;min-height:35px;font-size:12px;padding:7px 10px}
+ .vocab-list.horizontal-vocab.view-compact{grid-template-columns:1fr;max-height:calc(100dvh - 406px);min-height:200px;gap:6px}
+ .vocab-list.horizontal-vocab.view-compact .vocab-item{min-height:72px;padding:9px 10px;grid-template-columns:22px minmax(0,1fr) 36px}
+ .vocab-list.horizontal-vocab.view-compact .vocab-term{font-size:16px}
+ .vocab-list.horizontal-vocab.view-compact .vocab-meaning{font-size:13px}
+ .vocab-list.horizontal-vocab.view-detail{max-height:calc(100dvh - 406px)}
+ .kb-list-bar{font-size:10px;min-height:30px}
+ .vocab-list.horizontal-vocab.view-detail .vocab-item{grid-template-columns:26px minmax(0,1fr) 38px;min-height:108px;padding:10px}
+ .vocab-list.horizontal-vocab.view-detail .vocab-term{font-size:16px}
+ .vocab-list.horizontal-vocab.view-detail .vocab-example{font-size:11.5px}
+}
+@media(max-height:720px){
+ .vocab-list.horizontal-vocab.view-compact,.vocab-list.horizontal-vocab.view-detail{min-height:180px;max-height:calc(100dvh - 280px)}
+}
+
 </style>
 </head>
 <body>
@@ -1266,6 +1368,7 @@ const app = {
   selectedCategory: 0,
   activeMainTab: "speaking",
   activeKB: 1,
+  vocabView: "compact",
   soundOn: true,
   currentMediaRecorder: null,
   mediaStream: null,
@@ -1615,7 +1718,7 @@ const app = {
     const cat=TEST_DATA[this.selectedCategory];
     const s=this.categoryStats(cat);
     this.root.innerHTML=`
-      <div class="page">
+      <div class="page ${this.activeMainTab==="knowledge"?"topic-knowledge-page":""}">
         <div class="breadcrumb"><button onclick="app.goHome()">Home</button><span>›</span><span>${this.esc(this.cleanTitle(cat.title))}</span></div>
         <section class="topic-banner">
           <div class="eyebrow">Topic Group ${String(this.selectedCategory+1).padStart(2,"0")}</div>
@@ -1634,6 +1737,8 @@ const app = {
 
   switchMain(tab){
     this.stopAll(); this.click(); this.activeMainTab=tab;
+    const page=this.root.querySelector(".page");
+    if(page)page.classList.toggle("topic-knowledge-page",tab==="knowledge");
     document.querySelectorAll(".main-tabs .tab-btn").forEach((b,i)=>b.classList.toggle("active",(tab==="speaking"&&i===0)||(tab==="knowledge"&&i===1)));
     if(tab==="speaking") this.renderSpeakingMenu(); else this.renderKnowledge();
   },
@@ -2233,12 +2338,9 @@ const app = {
     const content=document.getElementById("topicContent");
     content.innerHTML=`
       <div class="panel">
-        <div class="kb-head">
-          <div>
-            <div class="eyebrow">Knowledge Bank</div>
-            <h2>Chọn nội dung để học</h2>
-          </div>
-          <div class="pill">${groups.reduce((n,g)=>n+Object.values(g.tiers).flat().length,0)} source items</div>
+        <div class="kb-overview">
+          <div class="kb-overview-title"><div class="eyebrow">Knowledge Bank</div><h2>${this.esc(this.cleanTitle(TEST_DATA[this.selectedCategory].title))}</h2></div>
+          <span class="pill">${groups.reduce((n,g)=>n+Object.values(g.tiers).flat().length,0)} từ / cụm từ</span>
         </div>
         <div class="kb-top-grid">
           ${names.map((n,i)=>`<button class="kb-tab ${this.activeKB===i+1?"active":""}" onclick="app.openKB(${i+1})"><span>0${i+1}</span>${n}</button>`).join("")}
@@ -2258,41 +2360,43 @@ const app = {
       if(!this.selectedLearning[n]) this.selectedLearning[n]=new Set();
       const selected=this.selectedLearning[n];
       area.innerHTML=`
-        <div class="kb-head">
-          <div><div class="eyebrow">Learn & Practice</div><h2>${titles[n]}</h2><p style="color:var(--muted);margin:3px 0">${data.length} items • chọn linh hoạt từ muốn học.</p></div>
-          <input class="search" placeholder="Tìm trong mục này..." oninput="app.filterVocab(this.value)">
-        </div>
-        <div class="learn-selector">
-          <div><b id="selectedCount">${selected.size}</b> / ${data.length} mục đã chọn</div>
-          <div class="selector-actions">
-            <button class="ghost-btn" onclick="app.selectAllLearning(${n})">✓ Chọn tất cả</button>
-            <button class="ghost-btn" onclick="app.clearLearningSelection(${n})">Bỏ chọn</button>
+        <div class="kb-tools-row">
+          <div class="kb-section-title"><h2>${titles[n]}</h2><p>${data.length} mục · Chạm thẻ để chọn từ luyện tập</p></div>
+          <input class="search kb-search" id="kbWordSearch" placeholder="🔎 Tìm từ hoặc nghĩa..." aria-label="Tìm trong danh sách từ" oninput="app.filterVocab(this.value)">
+          <div class="learn-selector">
+            <div><b id="selectedCount">${selected.size}</b>/${data.length} đã chọn</div>
+            <div class="selector-actions">
+              <button class="ghost-btn" onclick="app.selectAllLearning(${n})">✓ Tất cả</button>
+              <button class="ghost-btn" onclick="app.clearLearningSelection(${n})">Bỏ chọn</button>
+            </div>
           </div>
         </div>
-        <div class="exercise-row">
+        <div class="exercise-row" aria-label="6 trò chơi từ vựng">
           <button onclick="app.startExercise(${n},'flash')">🃏 Flashcard</button>
           <button onclick="app.startExercise(${n},'match')">🧩 Ghép từ</button>
           <button onclick="app.startExercise(${n},'quiz')">✅ Trắc nghiệm</button>
-          <button onclick="app.startExercise(${n},'viquiz')">🇻🇳 Nghe Việt – Chọn Anh</button>
-          <button onclick="app.startExercise(${n},'vispeak')">🎙️ Nghe Việt – Nói Anh</button>
-          <button onclick="app.startExercise(${n},'fill')">✍️ Fill in the Blank</button>
+          <button onclick="app.startExercise(${n},'viquiz')">🇻🇳 Việt → Chọn Anh</button>
+          <button onclick="app.startExercise(${n},'vispeak')">🎙️ Việt → Nói Anh</button>
+          <button onclick="app.startExercise(${n},'fill')">✍️ Điền từ</button>
         </div>
-        <div class="vocab-table-head" aria-hidden="true">
-          <div></div>
-          <div>Từ / Cụm từ</div>
-          <div>IPA</div>
-          <div>Từ loại</div>
-          <div>Nghĩa tiếng Việt</div>
-          <div>Mẫu câu / Cách dùng</div>
-          <div>Nghe</div>
+        <div class="kb-list-bar">
+          <span><b id="visibleCount">${data.length}</b> từ · chạm để chọn luyện game</span>
+          <div class="kb-view-switch" aria-label="Kiểu hiển thị từ vựng">
+            <button class="${this.vocabView!=="detail"?"active":""}" onclick="app.setVocabView('compact')" title="Xem được nhiều từ hơn">▦ Gọn</button>
+            <button class="${this.vocabView==="detail"?"active":""}" onclick="app.setVocabView('detail')" title="Xem đầy đủ ví dụ và từ loại">☷ Chi tiết</button>
+          </div>
         </div>
-        <div class="vocab-list horizontal-vocab" id="vocabList">
-          ${data.map((it,i)=>`<div id="vitem${n}_${i}" class="vocab-item ${selected.has(i)?"selected":""}" data-search="${this.esc((it.raw+" "+it.meaning+" "+it.subtopic).toLowerCase())}" onclick="app.toggleLearningItem(${n},${i},event)">
+        <div class="vocab-table-head ${this.vocabView==="detail"?"is-detail":""}" aria-hidden="true">
+          <div></div><div>Từ / Cụm từ</div><div>IPA</div><div>Từ loại</div>
+          <div>Nghĩa tiếng Việt</div><div>Mẫu câu / Cách dùng</div><div>Nghe</div>
+        </div>
+        <div class="vocab-list horizontal-vocab view-${this.vocabView==="detail"?"detail":"compact"}" id="vocabList">
+          ${data.map((it,i)=>`<div id="vitem${n}_${i}" class="vocab-item ${selected.has(i)?"selected":""}" data-search="${this.esc((it.raw+" "+it.meaning+" "+it.subtopic+" "+it.ipa).toLowerCase())}" onclick="app.toggleLearningItem(${n},${i},event)">
             <input class="learn-check" type="checkbox" ${selected.has(i)?"checked":""} onclick="event.stopPropagation();app.toggleLearningItem(${n},${i},event)" aria-label="Chọn ${this.esc(it.term)}">
             <div class="vocab-term">${this.esc(it.term)}<span class="source-tag">${this.esc(it.subtopic||"—")}</span></div>
             <div class="vocab-ipa">${it.ipa?this.esc(it.ipa):"—"}</div>
             <div class="vocab-pos">${this.esc(this.wordClassLabel(it,n))}</div>
-            <div class="vocab-meaning">${this.esc(it.meaning||it.raw)}</div>
+            <div class="vocab-meaning" title="${this.esc(it.meaning||it.raw)}">${this.esc(it.meaning||it.raw)}</div>
             <div class="vocab-example"><b>Usage</b>${this.esc(this.usageExample(it,n))}</div>
             <button class="vocab-audio-btn" title="Nghe phát âm" aria-label="Nghe ${this.esc(it.term)}" onclick="event.stopPropagation();app.speak(decodeURIComponent('${encodeURIComponent(it.term.replace(/→/g," "))}'))">🔊</button>
           </div>`).join("")}
@@ -2302,6 +2406,18 @@ const app = {
     if(n===5) this.renderChunks(area);
     if(n===6) this.renderIdeas(area);
     if(n===7) this.renderUpgrade(area);
+  },
+
+  setVocabView(view){
+    this.click();
+    this.vocabView=view==="detail"?"detail":"compact";
+    const list=document.getElementById("vocabList");
+    if(!list)return;
+    list.classList.toggle("view-compact",this.vocabView==="compact");
+    list.classList.toggle("view-detail",this.vocabView==="detail");
+    const head=document.querySelector(".vocab-table-head");
+    if(head)head.classList.toggle("is-detail",this.vocabView==="detail");
+    document.querySelectorAll(".kb-view-switch button").forEach((btn,i)=>btn.classList.toggle("active",i===(this.vocabView==="detail"?1:0)));
   },
 
   learningData(tier){
@@ -2343,7 +2459,14 @@ const app = {
 
   filterVocab(q){
     q=q.toLowerCase().trim();
-    document.querySelectorAll("#vocabList .vocab-item").forEach(x=>x.classList.toggle("hidden",q&&!x.dataset.search.includes(q)));
+    let visible=0;
+    document.querySelectorAll("#vocabList .vocab-item").forEach(x=>{
+      const show=!q||x.dataset.search.includes(q);
+      x.classList.toggle("hidden",!show);
+      if(show)visible++;
+    });
+    const count=document.getElementById("visibleCount");
+    if(count)count.textContent=visible;
   },
 
   shuffle(a){return [...a].sort(()=>Math.random()-.5)},
