@@ -1208,6 +1208,14 @@ button:hover{transform:translateY(-1px)}
   .vocab-list.horizontal-vocab .vocab-audio-btn{grid-area:audio;align-self:center;width:44px;height:44px}
 }
 
+
+/* VIETNAMESE AUDIO GAMES */
+.auto-count{font-size:clamp(60px,12vw,115px);color:var(--orange);font-weight:950;text-align:center;margin:8px auto}
+.auto-feedback{text-align:center;min-height:65px;padding:14px 12px;font-size:18px;line-height:1.55;color:var(--navy);font-weight:700}
+.game-board .quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.game-board .quiz-option.good{border:2px solid #108a52;background:#e3ffef;color:#06663a}
+.game-board .quiz-option.bad{border:2px solid #c13b3b;background:#ffeded;color:#a22222}
+@media(max-width:680px){.game-board .quiz-options{grid-template-columns:1fr}.auto-feedback{font-size:15px}}
 </style>
 </head>
 <body>
@@ -1284,7 +1292,7 @@ const app = {
     this.buildIPACache();
     if(this.isAuthenticated()){
       this.renderHome();
-      setTimeout(()=>this.prepareMicrophone(true),350);
+      /* microphone requested on first user interaction after entry */
     }else{
       this.renderLogin();
     }
@@ -1378,6 +1386,9 @@ const app = {
       return false;
     }
     if(this.micPermission==="granted") return true;
+    if(this.micPermission==="denied" || this.micPermission==="unsupported") return false;
+    if(this.micPermission==="requesting")return false;
+    this.micPermission="requesting";
     try{
       const stream=await navigator.mediaDevices.getUserMedia({audio:true});
       stream.getTracks().forEach(t=>t.stop());
@@ -2262,6 +2273,8 @@ const app = {
           <button onclick="app.startExercise(${n},'flash')">🃏 Flashcard</button>
           <button onclick="app.startExercise(${n},'match')">🧩 Ghép từ</button>
           <button onclick="app.startExercise(${n},'quiz')">✅ Trắc nghiệm</button>
+          <button onclick="app.startExercise(${n},'viquiz')">🇻🇳 Nghe Việt – Chọn Anh</button>
+          <button onclick="app.startExercise(${n},'vispeak')">🎙️ Nghe Việt – Nói Anh</button>
           <button onclick="app.startExercise(${n},'fill')">✍️ Fill in the Blank</button>
         </div>
         <div class="vocab-table-head" aria-hidden="true">
@@ -2342,7 +2355,7 @@ const app = {
       alert("Hãy chọn ít nhất 1 từ/cụm từ để luyện. Bạn có thể bấm “Chọn tất cả”.");
       return;
     }
-    const labels={flash:"Flashcard",match:"Ghép từ",quiz:"Trắc nghiệm",fill:"Fill in the Blank"};
+    const labels={flash:"Flashcard",match:"Ghép từ",quiz:"Trắc nghiệm",viquiz:"Nghe Việt – Chọn Anh",vispeak:"Nghe Việt – Nói Anh",fill:"Fill in the Blank"};
     this.exercise={tier,type,data:selected,index:0,score:0};
     this.root.innerHTML=`
       <div class="game-page">
@@ -2367,9 +2380,11 @@ const app = {
       this.exercise.matchBatch=0;
       this.exercise.matchBatchSize=10;
       this.renderMatch();
-    }else if(type==="quiz"){
+    }else if(type==="quiz" || type==="viquiz" || type==="vispeak"){
       this.exercise.deck=this.shuffle(selected);
-      this.renderQuiz();
+      if(type==="quiz") this.renderQuiz();
+      else if(type==="viquiz") this.renderViQuiz();
+      else this.renderViSpeak();
     }else{
       this.exercise.deck=this.shuffle(selected);
       this.renderFill();
@@ -2378,6 +2393,7 @@ const app = {
 
 
   returnToKnowledge(tier){
+    this.clearAutoGame();
     this.stopAll();
     this.activeMainTab="knowledge";
     this.activeKB=tier;
@@ -2494,31 +2510,119 @@ const app = {
   },
 
 
+  clearAutoGame(){
+    clearTimeout(this.autoGameTimer);clearInterval(this.autoGameInterval);
+    this.autoGameToken=(this.autoGameToken||0)+1;
+    if(this.gameRecognition){try{this.gameRecognition.abort()}catch(e){} this.gameRecognition=null;}
+    try{speechSynthesis.cancel()}catch(e){}
+  },
+  sayGame(text,lang="en-GB",done){
+    if(!window.speechSynthesis){done?.();return;}
+    speechSynthesis.cancel();
+    const utterance=new SpeechSynthesisUtterance(String(text));
+    utterance.lang=lang;utterance.rate=lang==="vi-VN"?.93:.88;
+    let ended=false;
+    const finish=()=>{if(ended)return;ended=true;done?.()};
+    utterance.onend=finish;utterance.onerror=finish;
+    speechSynthesis.speak(utterance);
+    // Avoid blocking progression when a platform has no matching voice.
+    this.gameSpeechFallback=setTimeout(finish,Math.max(1500,Math.min(6000,String(text).length*110)));
+  },
   renderQuiz(){
-    const E=this.exercise,item=E.deck[E.index];
-    const pool=this.shuffle(E.data.filter(x=>x.meaning!==item.meaning)).slice(0,3).map(x=>x.meaning);
-    const opts=this.shuffle([item.meaning,...pool]);
+    this.renderAutoChoice(false);
+  },
+  renderViQuiz(){this.renderAutoChoice(true)},
+  renderAutoChoice(vietnamese){
+    this.clearAutoGame();const E=this.exercise,item=E.deck[E.index];
+    if(!item){this.finishAutoGame();return;}
+    E.answered=false;
+    const pool=this.shuffle(E.data.filter(x=>vietnamese?x.term!==item.term:x.meaning!==item.meaning)).slice(0,3).map(x=>vietnamese?x.term:x.meaning);
+    const opts=this.shuffle([vietnamese?item.term:item.meaning,...pool]);
     document.getElementById("exerciseArea").innerHTML=`<div class="exercise-box game-board">
-      <div class="game-progress"><span>Question ${E.index+1} / ${E.deck.length}</span><span>Điểm ${E.score}</span></div>
-      <h3 class="quiz-board-title">“${this.esc(item.term)}” có nghĩa phù hợp nhất là gì?</h3>
-      <div class="quiz-options">${opts.map((o,i)=>`<button class="quiz-option" onclick="app.answerQuiz(this,'${encodeURIComponent(o)}','${encodeURIComponent(item.meaning)}')">${this.esc(o)}</button>`).join("")}</div>
-      <div id="quizNext" class="action-row hidden"><button class="primary-btn" onclick="app.quizNext()">Tiếp →</button></div>
+      <div class="game-progress"><span>Câu ${E.index+1} / ${E.deck.length}</span><span>Điểm ${E.score}</span></div>
+      <div class="small" style="text-align:center">${vietnamese?'Nghe nghĩa tiếng Việt, chọn từ tiếng Anh':'Chọn nghĩa đúng của từ tiếng Anh'}</div>
+      <h3 class="quiz-board-title">${this.esc(vietnamese?item.meaning:item.term)}</h3>
+      <div class="action-row"><button class="secondary-btn" onclick="app.replayAutoQuestion()">🔊 Nghe lại</button></div>
+      <div class="quiz-options">${opts.map((o,i)=>`<button class="quiz-option" data-answer="${encodeURIComponent(o)}" onclick="app.answerAutoChoice(this)">${String.fromCharCode(65+i)}. ${this.esc(o)}</button>`).join("")}</div>
+      <div id="autoAnswerFeedback" class="auto-feedback" aria-live="polite"></div>
+      <div class="action-row"><button class="ghost-btn" onclick="app.autoGamePrev()">← Câu trước</button><button class="ghost-btn" onclick="app.autoGameSkip()">Bỏ qua →</button><button class="ghost-btn" onclick="app.returnToKnowledge(${E.tier})">↩ Quay lại</button></div>
     </div>`;
+    if(vietnamese) this.autoGameTimer=setTimeout(()=>this.sayGame(item.meaning,"vi-VN"),200);
   },
-  answerQuiz(btn,ans,correct){
-    ans=decodeURIComponent(ans); correct=decodeURIComponent(correct);
-    document.querySelectorAll(".quiz-option").forEach(b=>b.disabled=true);
-    btn.classList.add(ans===correct?"good":"bad");
-    if(ans!==correct){
-      [...document.querySelectorAll(".quiz-option")].find(b=>b.textContent===correct)?.classList.add("good");
-    }else this.exercise.score++;
-    document.getElementById("quizNext").classList.remove("hidden");
+  replayAutoQuestion(){const E=this.exercise,item=E.deck[E.index];this.sayGame(E.type==="viquiz"?item.meaning:item.term,E.type==="viquiz"?"vi-VN":"en-GB")},
+  answerAutoChoice(btn){
+    const E=this.exercise;if(E.answered)return;E.answered=true;
+    const item=E.deck[E.index],target=E.type==="viquiz"?item.term:item.meaning,chosen=decodeURIComponent(btn.dataset.answer);
+    document.querySelectorAll(".quiz-option").forEach(b=>{b.disabled=true;if(decodeURIComponent(b.dataset.answer)===target)b.classList.add("good")});
+    if(chosen!==target)btn.classList.add("bad");else E.score++;
+    document.getElementById("autoAnswerFeedback").innerHTML=`<b style="color:${chosen===target?'#108a52':'#c13b3b'}">${chosen===target?'✓ Chính xác!':'✗ Chưa đúng.'}</b><div>Đáp án: <strong>${this.esc(item.term)}</strong> ${item.ipa?this.esc(item.ipa):''} — ${this.esc(item.meaning)}</div>`;
+    const token=this.autoGameToken;
+    this.autoGameTimer=setTimeout(()=>this.sayGame(item.term,"en-GB",()=>{
+      if(token!==this.autoGameToken)return;
+      this.autoGameTimer=setTimeout(()=>{if(token===this.autoGameToken)this.autoGameNext()},850);
+    }),450);
   },
-  quizNext(){
-    this.exercise.index++;
-    if(this.exercise.index>=this.exercise.deck.length){
-      document.getElementById("exerciseArea").innerHTML=`<div class="exercise-box" style="text-align:center"><h3>Hoàn thành</h3><p>Điểm: <b>${this.exercise.score}/${this.exercise.deck.length}</b></p><button class="primary-btn" onclick="app.startExercise(${this.exercise.tier},'quiz')">Làm lại</button></div>`;
-    }else this.renderQuiz();
+  answerQuiz(btn){this.answerAutoChoice(btn)},
+  quizNext(){this.autoGameNext()},
+  autoGamePrev(){this.clearAutoGame();const E=this.exercise;E.index=Math.max(0,E.index-1);this.renderAutoGame()},
+  autoGameSkip(){this.clearAutoGame();this.autoGameNext()},
+  autoGameNext(){this.clearAutoGame();this.exercise.index++;this.renderAutoGame()},
+  renderAutoGame(){const type=this.exercise.type;if(type==="vispeak")this.renderViSpeak();else if(type==="viquiz")this.renderViQuiz();else this.renderQuiz()},
+  finishAutoGame(){
+    const E=this.exercise;
+    document.getElementById("exerciseArea").innerHTML=`<div class="exercise-box" style="text-align:center"><h2>🎉 Hoàn thành!</h2><h3>Điểm: ${E.score} / ${E.deck.length}</h3><div class="action-row"><button class="primary-btn" onclick="app.startExercise(${E.tier},'${E.type}')">Làm lại</button><button class="ghost-btn" onclick="app.returnToKnowledge(${E.tier})">← Danh sách từ</button></div></div>`;
+  },
+  renderViSpeak(){
+    this.clearAutoGame();const E=this.exercise,item=E.deck[E.index];if(!item){this.finishAutoGame();return;}
+    E.answered=false;
+    document.getElementById("exerciseArea").innerHTML=`<div class="exercise-box game-board">
+      <div class="game-progress"><span>Câu ${E.index+1} / ${E.deck.length}</span><span>Điểm ${E.score}</span></div>
+      <div class="small" style="text-align:center">🎙️ Nghe tiếng Việt, đếm 3 giây rồi nói tiếng Anh</div>
+      <h2 class="quiz-board-title">${this.esc(item.meaning)}</h2>
+      <div class="auto-count" id="viSpeakCount">🔊</div>
+      <div class="auto-feedback" id="autoAnswerFeedback" aria-live="polite">Đang phát âm tiếng Việt…</div>
+      <div class="action-row"><button class="secondary-btn" onclick="app.renderViSpeak()">🔁 Nghe và nói lại</button><button class="ghost-btn" onclick="app.autoGamePrev()">← Từ trước</button><button class="ghost-btn" onclick="app.autoGameSkip()">Bỏ qua →</button><button class="ghost-btn" onclick="app.returnToKnowledge(${E.tier})">↩ Quay lại</button></div>
+    </div>`;
+    const token=this.autoGameToken;
+    this.autoGameTimer=setTimeout(()=>this.sayGame(item.meaning,"vi-VN",()=>{if(token===this.autoGameToken)this.startViSpeakCountdown(token)}),180);
+  },
+  startViSpeakCountdown(token){
+    if(token!==this.autoGameToken)return;
+    let n=3;const counter=document.getElementById('viSpeakCount');if(!counter)return;
+    counter.textContent=n;
+    this.autoGameInterval=setInterval(()=>{
+      if(token!==this.autoGameToken){clearInterval(this.autoGameInterval);return;}
+      n--;if(n>0){counter.textContent=n;return;}
+      clearInterval(this.autoGameInterval);counter.textContent='🎤';
+      this.listenViSpeak(token);
+    },1000);
+  },
+  listenViSpeak(token){
+    const feedback=document.getElementById('autoAnswerFeedback');
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(this.micPermission==='denied'){feedback.textContent='Microphone đã bị từ chối. Bạn có thể cấp quyền trong cài đặt trình duyệt và thử lại.';return;}
+    if(!SR){feedback.textContent='Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy thử Chrome hoặc Edge.';return;}
+    const recognition=new SR();this.gameRecognition=recognition;
+    recognition.lang='en-GB';recognition.interimResults=false;recognition.maxAlternatives=3;
+    feedback.textContent='🎙️ Đang nghe bạn nói tiếng Anh…';
+    let handled=false;
+    recognition.onresult=e=>{
+      if(token!==this.autoGameToken||handled)return;handled=true;
+      const words=Array.from(e.results[0]).map(x=>x.transcript.trim());
+      const target=this.exercise.deck[this.exercise.index];
+      const normalize=t=>String(t).toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+      const passed=words.some(w=>normalize(w)===normalize(target.term));
+      if(passed){
+        this.exercise.score++;this.exercise.answered=true;
+        feedback.innerHTML=`<b style="color:#108a52">✓ Đọc đúng!</b><div>${this.esc(target.term)} ${target.ipa?this.esc(target.ipa):''} — ${this.esc(target.meaning)}</div>`;
+        this.sayGame(target.term,'en-GB',()=>{if(token===this.autoGameToken)this.autoGameTimer=setTimeout(()=>{if(token===this.autoGameToken)this.autoGameNext()},900)});
+      }else{
+        feedback.innerHTML=`<b style="color:#c13b3b">Chưa đúng, hãy nói lại.</b><div>Bạn nói: ${this.esc(words[0]||'')}</div><div>Nhấn “Nghe và nói lại” để thử tiếp.</div>`;
+      }
+    };
+    recognition.onerror=e=>{if(token===this.autoGameToken&&!handled)feedback.textContent=e.error==='not-allowed'?'Mic bị từ chối. Hãy kiểm tra quyền microphone.':'Chưa nhận rõ giọng nói. Nhấn “Nghe và nói lại” để thử tiếp.'};
+    recognition.onend=()=>{if(this.gameRecognition===recognition)this.gameRecognition=null};
+    try{recognition.start()}catch(e){feedback.textContent='Không khởi động được microphone. Hãy thử lại.'}
   },
 
   renderFill(){
@@ -2712,6 +2816,7 @@ const app = {
   },
 
   stopAll(){
+    this.clearAutoGame();
     clearInterval(this.timerId);clearInterval(this.prepTimerId);clearTimeout(this.recognitionRestartTimer);
     this.isRecordingActive=false;this.finishingRecording=false;
     try{speechSynthesis.cancel()}catch(e){}
@@ -2727,6 +2832,7 @@ document.addEventListener("click",e=>{
   if(e.target.tagName==="BUTTON"&&!e.target.closest("#soundToggle")) app.click();
 });
 window.addEventListener("beforeunload",()=>app.stopAll());
+document.addEventListener("pointerdown",()=>{if(app.isAuthenticated() && app.micPermission==="unknown")app.prepareMicrophone(true)}, {capture:true});
 app.init();
 </script>
 </body>
